@@ -1,0 +1,12 @@
+# API Interface (Diplomat Module)
+fastapi
+uvicorn[standard]
+
+# Web Scraping (Forager Module)
+requests
+beautifulsoup4
+lxml
+
+# Vector Search (Librarian Module)
+sentence-transformers
+faiss-cpu
