@@ -20,6 +20,6 @@ torch
 # Core Utilities
 numpy
 
-# Production Grade (New in V5.0)
+# Production Grade
 loguru
 pydantic

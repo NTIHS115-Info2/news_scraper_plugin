@@ -1,5 +1,4 @@
 # plugins/news_scraper/strategies/remote/librarian.py
-
 import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
@@ -7,20 +6,19 @@ import asyncio
 import re
 import sys
 import json
+from loguru import logger
+from data_models import LibrarianInput, LibrarianOutput, LibrarianResult, RelevantSection # [V6.0] 引入 Pydantic 模型
 
 class LibrarianStrategy:
-    """
-    圖書管理員策略 (Librarian Strategy) - V2.0.1
-    核心職責：接收長篇文本內容與使用者查詢，利用向量語義搜索，過濾出與查詢最相關的文本片段。
-    """
+    """ V6.0: Pydantic Contracts """
     def __init__(self, model_name='all-MiniLM-L6-v2'):
-        # [V2.0.1 核心修正] 將所有日誌輸出重定向到 stderr
-        print(f"正在加載句向量模型: {model_name} ...", file=sys.stderr)
+        logger.info(f"正在加載句向量模型: {model_name} ...")
         self.model = SentenceTransformer(model_name)
-        print("模型加載完成。", file=sys.stderr)
+        logger.info("模型加載完成。")
         self.priority = 100
 
     def _chunk_text(self, text, min_length=50, max_length=300):
+        # ... (此函數不變)
         sentences = re.split(r'(?<=[.!?\n\r。！？])\s*', text)
         chunks = []
         current_chunk = ""
@@ -34,45 +32,48 @@ class LibrarianStrategy:
         if len(current_chunk.strip()) >= min_length: chunks.append(current_chunk.strip())
         return chunks
 
-    async def filter_content(self, text_content: str, query: str, top_k: int = 3):
+    async def filter_content(self, input_data: LibrarianInput) -> LibrarianOutput: # [V6.0] 輸入輸出均為 Pydantic 模型
         try:
-            chunks = self._chunk_text(text_content)
+            chunks = self._chunk_text(input_data.text_content)
             if not chunks:
-                return {"success": True, "result": [], "resultType": "list"}
-
+                return LibrarianOutput(success=True, result=LibrarianResult(relevant_sections=[]))
+            
             chunk_embeddings = self.model.encode(chunks, convert_to_tensor=True).cpu().numpy()
-
+            
             index = faiss.IndexFlatL2(chunk_embeddings.shape[1])
             index.add(chunk_embeddings)
-
-            query_embedding = self.model.encode([query], convert_to_tensor=True).cpu().numpy()
-
-            distances, indices = index.search(query_embedding, top_k)
-
+            
+            query_embedding = self.model.encode([input_data.query], convert_to_tensor=True).cpu().numpy()
+            
+            distances, indices = index.search(query_embedding, 3) # top_k=3
+            
             results = []
             for i in range(len(indices[0])):
                 idx, dist = indices[0][i], distances[0][i]
                 if idx < len(chunks):
-                    results.append({"chunk": chunks[idx], "score": float(dist)})
-
-            return {"success": True, "result": results, "resultType": "list"}
+                    results.append(RelevantSection(chunk=chunks[idx], score=float(dist)))
+            
+            return LibrarianOutput(success=True, result=LibrarianResult(relevant_sections=results))
         except Exception as e:
             error_message = f"LibrarianStrategy filter_content failed: {str(e)}"
-            return {"success": False, "error": error_message}
+            logger.exception(error_message)
+            return LibrarianOutput(success=False, error=error_message)
 
 async def main():
     if len(sys.argv) > 2:
-        text_content = sys.argv[1]
-        query = sys.argv[2]
-        librarian = LibrarianStrategy()
-        result = await librarian.filter_content(text_content=text_content, query=query)
-        # [核心協議] 強制以 UTF-8 編碼輸出 JSON 到 stdout
-        sys.stdout.buffer.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+        try:
+            # [V6.0] 使用 Pydantic 進行輸入驗證
+            input_model = LibrarianInput(text_content=sys.argv[1], query=sys.argv[2])
+            librarian = LibrarianStrategy()
+            result_model = await librarian.filter_content(input_model)
+            sys.stdout.buffer.write(result_model.model_dump_json().encode('utf-8'))
+        except Exception as e:
+            # 如果輸入驗證失敗或執行出錯，返回標準化的錯誤 JSON
+            error_output = LibrarianOutput(success=False, error=str(e))
+            sys.stdout.buffer.write(error_output.model_dump_json().encode('utf-8'))
     else:
-        # 即使是錯誤訊息，也應該是一個乾淨的 JSON
-        error_result = {"success": False, "error": "Insufficient arguments for librarian.py"}
-        sys.stdout.buffer.write(json.dumps(error_result, ensure_ascii=False).encode('utf-8'))
-
+        error_output = LibrarianOutput(success=False, error="Insufficient arguments for librarian.py")
+        sys.stdout.buffer.write(error_output.model_dump_json().encode('utf-8'))
 
 if __name__ == '__main__':
     asyncio.run(main())
