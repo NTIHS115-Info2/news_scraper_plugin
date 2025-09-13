@@ -8,7 +8,7 @@ class RemoteStrategy {
         this.pythonPath = options.pythonPath || 'python';
         this.strategyPath = path.join(process.cwd(), 'plugins', 'news_scraper', 'strategies', 'remote');
         this.priority = 100;
-        console.log("遠程新聞抓取策略 (RemoteStrategy) V2.0 已初始化。");
+        console.log("遠程新聞抓取策略 (RemoteStrategy) V3.0 已初始化。");
     }
 
     _runPythonScript(scriptName, args) {
@@ -40,40 +40,37 @@ class RemoteStrategy {
     }
 
     async send(option) {
-        const { url, query } = option;
+        // 從 option 中解構出 V3.0 的新參數
+        const { url, query, summary_mode = 'single', summary_length = 'medium' } = option;
 
         if (!url || !query) {
             return { success: false, error: "缺少 'url' 或 'query' 參數。" };
         }
 
         try {
-            // 步驟一：調用 scraper.py 抓取網頁內容
             console.log(`[RemoteStrategy] 步驟 1: 調用 scraper 抓取 URL: ${url}`);
             const scrapedContent = await this._runPythonScript('scraper.py', [url]);
             const scrapedData = JSON.parse(scrapedContent);
-
-            if (!scrapedData.success) {
-                return scrapedData;
-            }
+            if (!scrapedData.success) { return scrapedData; }
             const articleText = scrapedData.result.article_text;
 
-            // 步驟二：調用 librarian.py 過濾內容
             console.log(`[RemoteStrategy] 步驟 2: 調用 librarian 過濾內容，查詢: "${query}"`);
             const filteredResult = await this._runPythonScript('librarian.py', [articleText, query]);
             const filteredData = JSON.parse(filteredResult);
+            if (!filteredData.success) { return filteredData; }
 
-            if (!filteredData.success) {
-                return filteredData;
-            }
+            console.log(`[RemoteStrategy] 步驟 3: 調用 summarizer 生成情報摘要 (模式: ${summary_mode}, 長度: ${summary_length})...`);
+            const chunksToSummarize = filteredData.result.map(item => item.chunk);
 
-            // [V2.0 新增] 步驟三：將過濾後的片段合併，並調用 summarizer.py 進行摘要
-            console.log(`[RemoteStrategy] 步驟 3: 調用 summarizer 生成情報摘要...`);
-            const chunksToSummarize = filteredData.result.map(item => item.chunk).join(' ');
-            const summaryResult = await this._runPythonScript('summarizer.py', [chunksToSummarize]);
-            const summaryData = JSON.parse(summaryResult);
+            const summarizerInput = JSON.stringify({
+                chunks: chunksToSummarize,
+                mode: summary_mode,
+                length: summary_length
+            });
 
-            // 最終將摘要結果返回
-            return summaryData;
+            const summaryResult = await this._runPythonScript('summarizer.py', [summarizerInput]);
+            
+            return JSON.parse(summaryResult);
 
         } catch (error) {
             return { success: false, error: `RemoteStrategy 執行失敗: ${error.message}` };
