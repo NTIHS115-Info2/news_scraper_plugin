@@ -3,7 +3,7 @@
 import NewsScraperPlugin from './plugins/news_scraper/index.js';
 
 async function runTest() {
-    console.log('--- 啟動 news_scraper 插件 V3.0 整合測試 ---');
+    console.log('--- 啟動 news_scraper 插件 V4.0 整合測試 (情報聚合器) ---');
 
     const options = { pythonPath: 'python' };
     const plugin = new NewsScraperPlugin(options);
@@ -16,30 +16,21 @@ async function runTest() {
         return;
     }
 
-    // --- 測試案例 1: 預設行為 (單一、中等長度摘要) ---
-    console.log("\n--- [測試案例 1] 預設行為 (single, medium) ---");
-    const task1 = {
-        url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
-        query: 'What is happening with European leaders and Russia?'
+    // --- 測試案例: 同時從多個來源抓取，並進行單一總結 ---
+    console.log("\n--- [測試案例] 多源聚合抓取 ---");
+    const task = {
+        // [V4.0 核心改造] 提供一個包含多個可靠 RSS Feed 的數組
+        urls: [
+            'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
+            'http://feeds.bbci.co.uk/news/world/rss.xml',
+            'https://feeds.reuters.com/Reuters/worldNews'
+        ],
+        query: 'What are the major international conflicts or tensions mentioned?'
     };
-    console.log('正在處理任務:', task1);
-    const result1 = await plugin.send(task1);
+    console.log('正在處理任務:', task);
+    const result = await plugin.send(task);
     console.log('插件回傳的最終情報摘要:');
-    console.log(JSON.stringify(result1, null, 2));
-
-    // --- 測試案例 2: 多角度、短摘要 ---
-    console.log("\n--- [測試案例 2] 多角度、短摘要 (multi, short) ---");
-    const task2 = {
-        url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
-        query: 'Palestine Action ban',
-        summary_mode: 'multi', // <--- V3.0 新參數
-        summary_length: 'short'  // <--- V3.0 新參數
-    };
-    console.log('正在處理任務:', task2);
-    const result2 = await plugin.send(task2);
-    console.log('插件回傳的多角度情報摘要:');
-    console.log(JSON.stringify(result2, null, 2));
-
+    console.log(JSON.stringify(result, null, 2));
 
     await plugin.offline();
     console.log(`\n[測試] 插件最終狀態: ${await plugin.state() === 0 ? '下線 (Offline)' : '錯誤'}`);

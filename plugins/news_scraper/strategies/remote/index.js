@@ -8,9 +8,10 @@ class RemoteStrategy {
         this.pythonPath = options.pythonPath || 'python';
         this.strategyPath = path.join(process.cwd(), 'plugins', 'news_scraper', 'strategies', 'remote');
         this.priority = 100;
-        console.log("遠程新聞抓取策略 (RemoteStrategy) V3.0 已初始化。");
+        console.log("遠程新聞抓取策略 (RemoteStrategy) V4.0 已初始化。");
     }
 
+    // _runPythonScript 函數保持不變
     _runPythonScript(scriptName, args) {
         return new Promise((resolve, reject) => {
             const scriptPath = path.join(this.strategyPath, scriptName);
@@ -40,16 +41,21 @@ class RemoteStrategy {
     }
 
     async send(option) {
-        // 從 option 中解構出 V3.0 的新參數
-        const { url, query, summary_mode = 'single', summary_length = 'medium' } = option;
+        // [V4.0 改造] url 參數現在是一個 URL 數組
+        const { urls, query, summary_mode = 'single', summary_length = 'medium' } = option;
 
-        if (!url || !query) {
-            return { success: false, error: "缺少 'url' 或 'query' 參數。" };
+        if (!urls || !Array.isArray(urls) || urls.length === 0) {
+            return { success: false, error: "缺少 'urls' 參數，或格式不正確 (應為數組)。" };
+        }
+        if (!query) {
+             return { success: false, error: "缺少 'query' 參數。" };
         }
 
         try {
-            console.log(`[RemoteStrategy] 步驟 1: 調用 scraper 抓取 URL: ${url}`);
-            const scrapedContent = await this._runPythonScript('scraper.py', [url]);
+            // [V4.0 改造] 將 URL 數組轉換為以逗號分隔的字符串
+            const urls_string = urls.join(',');
+            console.log(`[RemoteStrategy] 步驟 1: 調用 scraper 並發抓取 ${urls.length} 個來源...`);
+            const scrapedContent = await this._runPythonScript('scraper.py', [urls_string]);
             const scrapedData = JSON.parse(scrapedContent);
             if (!scrapedData.success) { return scrapedData; }
             const articleText = scrapedData.result.article_text;
