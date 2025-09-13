@@ -7,20 +7,14 @@ class RemoteStrategy {
     constructor(options) {
         this.pythonPath = options.pythonPath || 'python';
         this.strategyPath = path.join(process.cwd(), 'plugins', 'news_scraper', 'strategies', 'remote');
-        this.priority = 100; // 作為 remote 策略，優先級最高
-        console.log("遠程新聞抓取策略 (RemoteStrategy) 已初始化。");
+        this.priority = 100;
+        console.log("遠程新聞抓取策略 (RemoteStrategy) V2.0 已初始化。");
     }
 
-    /**
-     * 執行指定的 Python 腳本
-     * @param {string} scriptName - 腳本檔案名稱
-     * @param {Array<string>} args - 傳遞給腳本的參數
-     * @returns {Promise<string>} - 返回腳本的標準輸出
-     */
     _runPythonScript(scriptName, args) {
         return new Promise((resolve, reject) => {
             const scriptPath = path.join(this.strategyPath, scriptName);
-            console.log(`[RemoteStrategy] 正在執行 Python 腳本: ${scriptPath} 帶有參數: ${args}`);
+            console.log(`[RemoteStrategy] 正在執行 Python 腳本: ${scriptName} 帶有參數...`);
             const pyProcess = spawn(this.pythonPath, [scriptPath, ...args]);
 
             let stdout = '';
@@ -36,20 +30,15 @@ class RemoteStrategy {
 
             pyProcess.on('close', (code) => {
                 if (code !== 0) {
-                    console.error(`[RemoteStrategy] Python 腳本執行錯誤 (code ${code}): ${stderr}`);
+                    console.error(`[RemoteStrategy] Python 腳本 ${scriptName} 執行錯誤 (code ${code}): ${stderr}`);
                     return reject(new Error(stderr));
                 }
-                console.log(`[RemoteStrategy] Python 腳本執行成功。`);
+                console.log(`[RemoteStrategy] Python 腳本 ${scriptName} 執行成功。`);
                 resolve(stdout);
             });
         });
     }
 
-    /**
-     * 處理 send 請求，協調 scraper 和 librarian
-     * @param {object} option - 包含 url 和 query 的物件
-     * @returns {Promise<object>} - 返回處理結果
-     */
     async send(option) {
         const { url, query } = option;
 
@@ -64,17 +53,27 @@ class RemoteStrategy {
             const scrapedData = JSON.parse(scrapedContent);
 
             if (!scrapedData.success) {
-                return scrapedData; // 如果抓取失敗，直接返回錯誤
+                return scrapedData;
             }
-
             const articleText = scrapedData.result.article_text;
 
             // 步驟二：調用 librarian.py 過濾內容
             console.log(`[RemoteStrategy] 步驟 2: 調用 librarian 過濾內容，查詢: "${query}"`);
-            const filteredContent = await this._runPythonScript('librarian.py', [articleText, query]);
-            
-            // librarian.py 的輸出本身就是一個 JSON 字符串，直接解析返回即可
-            return JSON.parse(filteredContent);
+            const filteredResult = await this._runPythonScript('librarian.py', [articleText, query]);
+            const filteredData = JSON.parse(filteredResult);
+
+            if (!filteredData.success) {
+                return filteredData;
+            }
+
+            // [V2.0 新增] 步驟三：將過濾後的片段合併，並調用 summarizer.py 進行摘要
+            console.log(`[RemoteStrategy] 步驟 3: 調用 summarizer 生成情報摘要...`);
+            const chunksToSummarize = filteredData.result.map(item => item.chunk).join(' ');
+            const summaryResult = await this._runPythonScript('summarizer.py', [chunksToSummarize]);
+            const summaryData = JSON.parse(summaryResult);
+
+            // 最終將摘要結果返回
+            return summaryData;
 
         } catch (error) {
             return { success: false, error: `RemoteStrategy 執行失敗: ${error.message}` };
