@@ -23,3 +23,6 @@ numpy
 # Production Grade
 loguru
 pydantic
+
+# Browser Automation (New in V7.0)
+playwright
