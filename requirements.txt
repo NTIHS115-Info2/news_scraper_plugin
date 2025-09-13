@@ -26,3 +26,6 @@ pydantic
 
 # Browser Automation (New in V7.0)
 playwright
+
+googlesearch-python
+google-search-results

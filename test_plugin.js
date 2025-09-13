@@ -3,33 +3,27 @@
 import NewsScraperPlugin from './plugins/news_scraper/index.js';
 
 async function runTest() {
-    console.log('--- 啟動 news_scraper 插件 V4.0 整合測試 (情報聚合器) ---');
+    console.log('--- 啟動 news_scraper 插件 V8.0 整合測試 (自主研究代理) ---');
 
     const options = { pythonPath: 'python' };
     const plugin = new NewsScraperPlugin(options);
 
     await plugin.online();
-    const currentState = await plugin.state();
-    if (currentState !== 1) {
-        console.error('插件未能成功上線，測試中止。');
-        await plugin.offline();
-        return;
-    }
-
-    // --- 測試案例: 同時從多個來源抓取，並進行單一總結 ---
-    console.log("\n--- [測試案例] 多源聚合抓取 ---");
+    
+    // --- 測試案例: 主動發現來源並進行深度分析 ---
+    console.log("\n--- [測試案例] 自主研究任務 ---");
     const task = {
-        // [V4.0 核心改造] 提供一個包含多個可靠 RSS Feed 的數組
-        urls: [
-            'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
-            'http://feeds.bbci.co.uk/news/world/rss.xml',
-            'https://feeds.reuters.com/Reuters/worldNews'
-        ],
-        query: 'What are the major international conflicts or tensions mentioned?'
+        // [V8.0 核心改造] 不再提供 URL，而是提供研究主題
+        topic: "NVIDIA Blackwell architecture", 
+        // 插件將根據 topic 找到的文章，回答這個具體問題
+        query: "What are the performance improvements of Blackwell over Hopper?",
+        // [V8.0 新增] 精細化控制參數
+        depth: 3, // 讓 researcher 尋找 3 個最相關的來源
+        summary_length: 'long' // 請求一份長摘要
     };
-    console.log('正在處理任務:', task);
+    console.log('正在處理自主研究任務:', task);
     const result = await plugin.send(task);
-    console.log('插件回傳的最終情報摘要:');
+    console.log('插件回傳的最終研究報告:');
     console.log(JSON.stringify(result, null, 2));
 
     await plugin.offline();
