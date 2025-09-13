@@ -3,31 +3,46 @@
 import NewsScraperPlugin from './plugins/news_scraper/index.js';
 
 async function runTest() {
-    console.log('--- 啟動 news_scraper 插件 V8.0 整合測試 (自主研究代理) ---');
+    console.log('--- 啟動 news_scraper 插件 V9.0.1 整合測試 (降級策略驗收) ---');
 
     const options = { pythonPath: 'python' };
     const plugin = new NewsScraperPlugin(options);
 
+    console.log('\n[測試] 正在調用 online() ...');
     await plugin.online();
-    
-    // --- 測試案例: 主動發現來源並進行深度分析 ---
-    console.log("\n--- [測試案例] 自主研究任務 ---");
-    const task = {
-        // [V8.0 核心改造] 不再提供 URL，而是提供研究主題
-        topic: "NVIDIA Blackwell architecture", 
-        // 插件將根據 topic 找到的文章，回答這個具體問題
-        query: "What are the performance improvements of Blackwell over Hopper?",
-        // [V8.0 新增] 精細化控制參數
-        depth: 3, // 讓 researcher 尋找 3 個最相關的來源
-        summary_length: 'long' // 請求一份長摘要
-    };
-    console.log('正在處理自主研究任務:', task);
-    const result = await plugin.send(task);
-    console.log('插件回傳的最終研究報告:');
-    console.log(JSON.stringify(result, null, 2));
+    const currentState = await plugin.state();
+    console.log(`[測試] 插件當前狀態: ${currentState === 1 ? '上線 (Online)' : '錯誤或離線'}`);
+    if (currentState !== 1) {
+        console.error('插件未能成功上線，測試中止。');
+        return;
+    }
 
+    // [V9.0.1 核心改造] 使用一個已知需要 Playwright 的 URL 進行壓力測試
+    const task = {
+        url: 'https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/',
+        query: 'What is a web crawler?'
+    };
+    console.log('\n[測試] 正在調用 send() 處理任務:');
+    console.log(task);
+
+    const result = await plugin.send(task);
+
+    console.log('\n--- 整合測試完成 ---');
+    console.log('插件回傳的最終結果 (預覽):');
+    
+    if (result.success && result.result && result.result.length > 0) {
+        console.log(`成功找到 ${result.result.length} 個相關片段。`);
+        console.log("最佳匹配片段預覽:");
+        console.log(JSON.stringify(result.result[0], null, 2));
+    } else {
+        console.log(JSON.stringify(result, null, 2));
+    }
+
+
+    console.log('\n[測試] 正在調用 offline() ...');
     await plugin.offline();
-    console.log(`\n[測試] 插件最終狀態: ${await plugin.state() === 0 ? '下線 (Offline)' : '錯誤'}`);
+    const finalState = await plugin.state();
+    console.log(`[測試] 插件最終狀態: ${finalState === 0 ? '下線 (Offline)' : '錯誤'}`);
 }
 
 runTest();

@@ -3,11 +3,11 @@ fastapi
 uvicorn[standard]
 
 # Web Scraping & Parsing
-newspaper3k
-lxml_html_clean
 requests
 beautifulsoup4
 lxml
+playwright
+fake-useragent  # [V10.0 新增]
 
 # AI & Vector Search
 sentence-transformers
@@ -23,9 +23,3 @@ numpy
 # Production Grade
 loguru
 pydantic
-
-# Browser Automation (New in V7.0)
-playwright
-
-googlesearch-python
-google-search-results

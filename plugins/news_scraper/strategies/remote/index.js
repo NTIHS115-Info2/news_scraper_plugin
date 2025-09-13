@@ -8,7 +8,7 @@ class RemoteStrategy {
         this.pythonPath = options.pythonPath || 'python';
         this.strategyPath = path.join(process.cwd(), 'plugins', 'news_scraper', 'strategies', 'remote');
         this.priority = 100;
-        console.log("遠程新聞抓取策略 (RemoteStrategy) V8.0.1 已初始化。");
+        console.log("遠程新聞抓取策略 (RemoteStrategy) V9.0.1 已初始化。");
     }
 
     _runPythonScript(scriptName, args) {
@@ -27,7 +27,7 @@ class RemoteStrategy {
                 stderr += data.toString();
             });
             
-            // [V8.0.1 核心修正] 增加對 spawn 本身錯誤的監聽
+            // [V8.0.1 歷史修正恢復] 增加對 spawn 本身錯誤的監聽，防止靜默失敗
             pyProcess.on('error', (err) => {
                 console.error(`[RemoteStrategy] 無法啟動子進程 ${scriptName}:`, err);
                 reject(err);
@@ -39,6 +39,12 @@ class RemoteStrategy {
                     console.error(`[RemoteStrategy] Python 腳本 ${scriptName} 執行錯誤 (code ${code}): ${errorMessage}`);
                     reject(new Error(errorMessage));
                 } else {
+                    // [鑽石定律] 確保即使 stdout 為空，也返回一個有效的空字符串 JSON
+                    if (stdout.trim() === '') {
+                        console.warn(`[RemoteStrategy] Python 腳本 ${scriptName} 成功執行，但 stdout 為空。`);
+                        resolve('{}'); 
+                        return;
+                    }
                     console.log(`[RemoteStrategy] Python 腳本 ${scriptName} 執行成功。`);
                     resolve(stdout);
                 }
@@ -47,54 +53,43 @@ class RemoteStrategy {
     }
 
     async send(option) {
-        // ... (send 函數邏輯不變)
-        const { topic, query, depth = 3, summary_mode = 'single', summary_length = 'medium' } = option;
+        const { url, query } = option;
 
-        if (!topic) {
-            return { success: false, error: "缺少 'topic' 參數。" };
-        }
-        if (!query) {
-             return { success: false, error: "缺少 'query' 參數。" };
+        if (!url || !query) {
+            return { success: false, error: "缺少 'url' 或 'query' 參數。" };
         }
 
         try {
-            console.log(`[RemoteStrategy] 步驟 1: 調用 researcher 發現關於 '${topic}' 的來源...`);
-            const researcherResult = await this._runPythonScript('researcher.py', [topic, depth.toString()]);
-            const researcherData = JSON.parse(researcherResult);
-            if (!researcherData.success || !researcherData.result) { return researcherData; }
-            const discoveredUrls = researcherData.result.discovered_urls;
-            if (discoveredUrls.length === 0) {
-                return { success: true, result: { summary: "No relevant sources found for the topic." }, resultType: "object" };
+            console.log(`[RemoteStrategy] 步驟 1: 調用 scraper 抓取通用 URL: ${url}`);
+            const scrapedContent = await this._runPythonScript('scraper.py', [url]);
+            // 增加對空JSON的防禦
+            if (!scrapedContent || scrapedContent.trim() === '{}') {
+                return { success: false, error: "Scraper returned empty content." };
             }
-
-            const urls_string = discoveredUrls.join(',');
-            console.log(`[RemoteStrategy] 步驟 2: 調用 scraper 並發抓取 ${discoveredUrls.length} 個已發現的來源...`);
-            const scrapedContent = await this._runPythonScript('scraper.py', [urls_string]);
             const scrapedData = JSON.parse(scrapedContent);
-            if (scrapedData.errors && scrapedData.errors.length > 0) {
-                console.warn(`[RemoteStrategy] Scraper 報告了 ${scrapedData.errors.length} 個錯誤。`);
-            }
-            if (!scrapedData.success || !scrapedData.result) { return scrapedData; }
-            const articleText = scrapedData.result.article_text;
 
-            console.log(`[RemoteStrategy] 步驟 3: 調用 librarian 過濾內容，查詢: "${query}"`);
+            if (!scrapedData.success || !scrapedData.result) {
+                return scrapedData;
+            }
+
+            const articleText = scrapedData.result.article_text;
+            if (!articleText || articleText.trim() === '') {
+                 return { success: true, result: { relevant_sections: [] }, resultType: "list" };
+            }
+
+            console.log(`[RemoteStrategy] 步驟 2: 調用 librarian 過濾內容，查詢: "${query}"`);
             const filteredResult = await this._runPythonScript('librarian.py', [articleText, query]);
             const filteredData = JSON.parse(filteredResult);
-            if (!filteredData.success || !filteredData.result) { return filteredData; }
-
-            console.log(`[RemoteStrategy] 步驟 4: 調用 summarizer 生成情報摘要...`);
-            const chunksToSummarize = filteredData.result.relevant_sections.map(item => item.chunk);
-            const summarizerInput = JSON.stringify({
-                chunks: chunksToSummarize,
-                mode: summary_mode,
-                length: summary_length
-            });
-            const summaryResult = await this._runPythonScript('summarizer.py', [summarizerInput]);
             
-            return JSON.parse(summaryResult);
+            // 修正 V9.0 測試腳本中的一個小錯誤，librarian 的結果是在 result.relevant_sections
+            if (filteredData.success && filteredData.result && filteredData.result.relevant_sections) {
+                 // 為了與 test_plugin.js 的預期輸出格式匹配，我們直接返回 librarian 的結果
+                 // 並將其內部的 relevant_sections 提升一層
+                 return { success: true, result: filteredData.result.relevant_sections, resultType: 'list' };
+            }
+            return filteredData;
 
         } catch (error) {
-            // 這個 catch 現在能捕獲到更精確的錯誤訊息
             return { success: false, error: `RemoteStrategy 執行失敗: ${error.message}` };
         }
     }
