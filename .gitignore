@@ -8,3 +8,6 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
+
+# Logs (New in V5.0)
+logs/

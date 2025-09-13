@@ -13,9 +13,13 @@ lxml
 sentence-transformers
 faiss-cpu
 
-# AI Summarization (New in V2.0)
+# AI Summarization
 transformers
 torch
 
 # Core Utilities
 numpy
+
+# Production Grade (New in V5.0)
+loguru
+pydantic
