@@ -7,7 +7,7 @@ requests
 beautifulsoup4
 lxml
 playwright
-fake-useragent  # [V10.0 新增]
+fake-useragent
 
 # AI & Vector Search
 sentence-transformers

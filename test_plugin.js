@@ -3,8 +3,9 @@
 import NewsScraperPlugin from './plugins/news_scraper/index.js';
 
 async function runTest() {
-    console.log('--- 啟動 news_scraper 插件 V9.0.1 整合測試 (降級策略驗收) ---');
+    console.log('--- 啟動 news_scraper 插件 V10.0.2 整合測試 ---');
 
+    // [V10.0.2 核心修正] 恢復被錯誤省略的插件初始化與上線流程
     const options = { pythonPath: 'python' };
     const plugin = new NewsScraperPlugin(options);
 
@@ -14,30 +15,34 @@ async function runTest() {
     console.log(`[測試] 插件當前狀態: ${currentState === 1 ? '上線 (Online)' : '錯誤或離線'}`);
     if (currentState !== 1) {
         console.error('插件未能成功上線，測試中止。');
+        await plugin.offline();
         return;
     }
-
-    // [V9.0.1 核心改造] 使用一個已知需要 Playwright 的 URL 進行壓力測試
+    
     const task = {
         url: 'https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/',
         query: 'What is a web crawler?'
     };
-    console.log('\n[測試] 正在調用 send() 處理任務:');
-    console.log(task);
-
-    const result = await plugin.send(task);
-
-    console.log('\n--- 整合測試完成 ---');
-    console.log('插件回傳的最終結果 (預覽):');
     
-    if (result.success && result.result && result.result.length > 0) {
-        console.log(`成功找到 ${result.result.length} 個相關片段。`);
-        console.log("最佳匹配片段預覽:");
-        console.log(JSON.stringify(result.result[0], null, 2));
-    } else {
-        console.log(JSON.stringify(result, null, 2));
-    }
+    console.log("\n--- [測試案例] 首次請求 (預期從網路抓取) ---");
+    console.time("first_request_duration");
+    const result1 = await plugin.send(task);
+    console.timeEnd("first_request_duration");
+    
+    console.log('插件回傳的完整結果 (首次):');
+    console.log(JSON.stringify(result1, null, 2));
 
+    // --- 第二次執行：預期會從快取命中 ---
+    console.log("\n--- [測試案例 2] 重複請求 (預期從快取命中) ---");
+    console.time("second_request_duration");
+    const result2 = await plugin.send(task);
+    console.timeEnd("second_request_duration");
+
+    console.log('插件回傳的完整結果 (快取):');
+    console.log(JSON.stringify(result2, null, 2));
+    
+    console.log("\n--- 測試結論 ---");
+    console.log("請比較兩次請求的時間。第二次請求的時間應遠小於第一次，以證明快取生效。");
 
     console.log('\n[測試] 正在調用 offline() ...');
     await plugin.offline();

@@ -9,5 +9,8 @@ __pycache__/
 .idea/
 .DS_Store
 
-# Logs (New in V5.0)
+# Logs
 logs/
+
+# Cache (V10.0 新增)
+plugins/news_scraper/strategies/remote/cache/

@@ -1,34 +1,39 @@
 # plugins/news_scraper/strategies/remote/scraper.py
 import sys
 import json
-import requests
-from bs4 import BeautifulSoup
-import asyncio
-from pathlib import Path
-from loguru import logger
-from playwright.async_api import async_playwright
-import random
+# [V10.0.2 防禦性設計] 將導入語句放在 try...except 塊中
+try:
+    import requests
+    from bs4 import BeautifulSoup
+    import asyncio
+    from pathlib import Path
+    from loguru import logger
+    from playwright.async_api import async_playwright
+    from fake_useragent import UserAgent
+    import time
+    from data_models import ScraperOutput, ScraperResult
+except ImportError as e:
+    # 如果任何導入失敗，立即打印一個標準化的 JSON 錯誤並退出
+    error_output = {"success": False, "error": f"Import Error in scraper.py: {e}"}
+    print(json.dumps(error_output, ensure_ascii=False))
+    sys.exit(1)
 
-# ... (日誌和 User Agent 配置繼承自 V8.0.3，不變) ...
+
+# --- 配置 ---
 log_path = Path(__file__).parent.parent.parent.parent.parent / "logs" / "plugin.log"
 logger.add(log_path, rotation="10 MB", retention="7 days", level="INFO")
-
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-]
+CACHE_DIR = Path(__file__).parent / "cache"
+CACHE_EXPIRATION = 3600
+CACHE_DIR.mkdir(exist_ok=True)
 
 class ForagerStrategy:
-    """
-    情報採集策略 - V9.0.1 "通用內容提取器" (歷史恢復版)
-    核心職責：恢復 V7.0 的混合抓取策略，以應對通用 HTML 網頁的反爬蟲機制。
-    """
+    # ... (內部程式碼與 V10.0 相同) ...
     def __init__(self):
-        logger.info("ForagerStrategy (V9.0.1) 已初始化。")
+        logger.info("ForagerStrategy (V10.0) 已初始化。")
+        self.ua = UserAgent()
 
     def _get_random_headers(self) -> dict:
-        return {'User-Agent': random.choice(USER_AGENTS)}
+        return {'User-Agent': self.ua.random}
 
     def _clean_html_content(self, html_text: str) -> str:
         soup = BeautifulSoup(html_text, 'lxml')
@@ -44,16 +49,21 @@ class ForagerStrategy:
         logger.info(f"檢測到反爬蟲機制，切換至 Playwright 攻城槌模式: {url}")
         async with async_playwright() as p:
             browser = await p.chromium.launch()
-            page = await browser.new_page(user_agent=random.choice(USER_AGENTS))
+            page = await browser.new_page(user_agent=self.ua.random)
             await page.goto(url, wait_until='domcontentloaded', timeout=30000)
             content = await page.content()
             await browser.close()
             return content
 
-    async def fetch_content(self, url: str) -> dict:
-        """
-        [V9.0.1 核心改造] 恢復 V7.0 的 requests -> playwright 降級策略
-        """
+    async def fetch_content(self, url: str) -> ScraperOutput:
+        cache_key = url.replace("https://", "").replace("http://", "").replace("/", "_") + ".json"
+        cache_file = CACHE_DIR / cache_key
+        if cache_file.exists():
+            cached_data = json.loads(cache_file.read_text(encoding="utf-8"))
+            if time.time() - cached_data["timestamp"] < CACHE_EXPIRATION:
+                logger.info(f"從快取命中: {url}")
+                return ScraperOutput.model_validate(cached_data["content"])
+
         try:
             html_content = ""
             logger.info(f"正在使用 Requests 抓取: {url}")
@@ -69,30 +79,33 @@ class ForagerStrategy:
                  raise ValueError("兩種抓取方法均未能獲取到頁面內容。")
 
             cleaned_article = self._clean_html_content(html_content)
+            
+            result_obj = ScraperResult(source_url=url, article_text=cleaned_article.strip())
+            output_obj = ScraperOutput(success=True, result=result_obj)
+            
+            cache_content = {"timestamp": time.time(), "content": output_obj.model_dump()}
+            cache_file.write_text(json.dumps(cache_content, ensure_ascii=False), encoding="utf-8")
 
-            return {
-                "success": True,
-                "result": { "source_url": url, "article_text": cleaned_article.strip() },
-                "resultType": "object"
-            }
+            return output_obj
+
         except Exception as e:
             error_message = f"ForagerStrategy 在所有嘗試後均失敗 for URL {url}: {e}"
             logger.error(error_message)
-            return {"success": False, "error": error_message}
-
+            return ScraperOutput(success=False, error=error_message)
 
 def main():
     if len(sys.argv) > 1:
         url = sys.argv[1]
-        forager = ForagerStrategy()
-        # [V9.0.1] 由於 playwright 的引入，我們必須在異步環境中運行
+        
         async def async_main():
-            result = await forager.fetch_content(url=url)
-            sys.stdout.buffer.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            forager = ForagerStrategy()
+            result_model = await forager.fetch_content(url=url)
+            sys.stdout.buffer.write(result_model.model_dump_json().encode('utf-8'))
+            
         asyncio.run(async_main())
     else:
-        error_result = {"success": False, "error": "No URL provided to scraper.py"}
-        sys.stdout.buffer.write(json.dumps(error_result, ensure_ascii=False).encode('utf-8'))
+        error_result = ScraperOutput(success=False, error="No URL provided to scraper.py")
+        sys.stdout.buffer.write(error_result.model_dump_json().encode('utf-8'))
 
 if __name__ == '__main__':
     main()
