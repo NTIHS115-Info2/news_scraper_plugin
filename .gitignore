@@ -9,8 +9,5 @@ __pycache__/
 .idea/
 .DS_Store
 
-# Logs
-logs/
-
-# Cache (V10.0 新增)
-plugins/news_scraper/strategies/remote/cache/
+# macOS Metadata (V11.0.6 新增)
+._*
