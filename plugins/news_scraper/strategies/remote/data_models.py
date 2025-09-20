@@ -2,6 +2,16 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
+# --- Researcher Models ---
+class ResearcherResult(BaseModel):
+    discovered_urls: List[str]
+
+class ResearcherOutput(BaseModel):
+    success: bool
+    result: Optional[ResearcherResult] = None
+    error: Optional[str] = None
+    resultType: str = "object"
+
 # --- Scraper Models ---
 class ScraperResult(BaseModel):
     source_url: str
@@ -11,11 +21,10 @@ class ScraperOutput(BaseModel):
     success: bool
     result: Optional[ScraperResult] = None
     error: Optional[str] = None
-    # [V10.0.1 歷史恢復] 恢復 errors 欄位以處理部分失敗
-    errors: List[str] = Field(default_factory=list)
     resultType: str = "object"
 
 # --- Librarian Models ---
+# [V12.0.5 核心修正] 補上缺失的 LibrarianInput 模型
 class LibrarianInput(BaseModel):
     text_content: str
     query: str

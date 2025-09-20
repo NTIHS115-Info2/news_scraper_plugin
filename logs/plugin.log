@@ -104,3 +104,21 @@ Call log:
 2025-09-20 13:31:19.624 | INFO     | __main__:fetch_content:61 - 從快取命中: https://www.artificialintelligence-news.com/news/nvidia-unveils-blackwell-architecture-power-next-genai-wave/
 2025-09-20 13:31:19.624 | INFO     | __main__:fetch_content:61 - 從快取命中: https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing
 2025-09-20 13:31:19.624 | INFO     | __main__:fetch_content:61 - 從快取命中: https://www.tomshardware.com/pc-components/gpus/nvidia-blackwell-architecture-deep-dive-a-closer-look-at-the-upgrades-coming-with-rtx-50-series-gpus
+2025-09-20 21:46:18.962 | INFO     | __main__:__init__:21 - ResearcherStrategy (V12.0.4) 已初始化。
+2025-09-20 21:46:18.962 | INFO     | __main__:discover_sources:32 - 正在使用 [DuckDuckGo Direct Scrape] 為主題 'NVIDIA Blackwell architecture' 發現來源...
+2025-09-20 21:46:20.106 | INFO     | __main__:discover_sources:47 - 成功發現 3 個潛在來源。
+2025-09-20 21:46:20.550 | INFO     | __main__:__init__:19 - ForagerStrategy (V12.0.4) 已初始化。
+2025-09-20 21:46:20.550 | INFO     | __main__:__init__:19 - ForagerStrategy (V12.0.4) 已初始化。
+2025-09-20 21:46:20.550 | INFO     | __main__:__init__:19 - ForagerStrategy (V12.0.4) 已初始化。
+2025-09-20 21:46:20.563 | INFO     | __main__:fetch_content:53 - 正在使用 Requests 抓取: https://www.tomshardware.com/pc-components/gpus/nvidia-blackwell-architecture-deep-dive-a-closer-look-at-the-upgrades-coming-with-rtx-50-series-gpus
+2025-09-20 21:46:20.563 | INFO     | __main__:fetch_content:53 - 正在使用 Requests 抓取: https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing
+2025-09-20 21:46:20.564 | INFO     | __main__:fetch_content:53 - 正在使用 Requests 抓取: https://www.artificialintelligence-news.com/news/nvidia-unveils-blackwell-architecture-power-next-genai-wave/
+2025-09-20 21:46:23.318 | WARNING  | __main__:_clean_html_content:27 - 在頁面中未找到 <article> 標籤，將採用通用的 <p> 標籤提取策略。
+2025-09-20 22:18:00.908 | INFO     | __main__:__init__:21 - ResearcherStrategy (V12.0.4) 已初始化。
+2025-09-20 22:18:00.909 | INFO     | __main__:discover_sources:29 - 從快取命中主題: NVIDIA Blackwell architecture
+2025-09-20 22:18:01.241 | INFO     | __main__:__init__:19 - ForagerStrategy (V12.0.4) 已初始化。
+2025-09-20 22:18:01.241 | INFO     | __main__:__init__:19 - ForagerStrategy (V12.0.4) 已初始化。
+2025-09-20 22:18:01.241 | INFO     | __main__:__init__:19 - ForagerStrategy (V12.0.4) 已初始化。
+2025-09-20 22:18:01.254 | INFO     | __main__:fetch_content:49 - 從快取命中: https://www.tomshardware.com/pc-components/gpus/nvidia-blackwell-architecture-deep-dive-a-closer-look-at-the-upgrades-coming-with-rtx-50-series-gpus
+2025-09-20 22:18:01.254 | INFO     | __main__:fetch_content:49 - 從快取命中: https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing
+2025-09-20 22:18:01.254 | INFO     | __main__:fetch_content:49 - 從快取命中: https://www.artificialintelligence-news.com/news/nvidia-unveils-blackwell-architecture-power-next-genai-wave/

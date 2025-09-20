@@ -1,18 +1,12 @@
 # plugins/news_scraper/strategies/remote/scraper.py
-import sys
-import json
-import requests
+import sys, json, requests, asyncio, time, hashlib
 from bs4 import BeautifulSoup
-import asyncio
 from pathlib import Path
 from loguru import logger
 from playwright.async_api import async_playwright
 from fake_useragent import UserAgent
-import time
-import hashlib # [V11.0.2 新增] 引入雜湊函式庫
 from data_models import ScraperOutput, ScraperResult
 
-# --- 配置 ---
 log_path = Path(__file__).parent.parent.parent.parent.parent / "logs" / "plugin.log"
 logger.add(log_path, rotation="10 MB", retention="7 days", level="INFO")
 CACHE_DIR = Path(__file__).parent / "cache"
@@ -20,16 +14,12 @@ CACHE_EXPIRATION = 3600
 CACHE_DIR.mkdir(exist_ok=True)
 
 class ForagerStrategy:
-    """
-    情報採集策略 - V11.0.2 "健壯情報核心"
-    """
+    """ V12.0.4: Final Alpha Version """
     def __init__(self):
-        logger.info("ForagerStrategy (V11.0.2) 已初始化。")
+        logger.info("ForagerStrategy (V12.0.4) 已初始化。")
         self.ua = UserAgent()
 
-    def _get_random_headers(self) -> dict:
-        return {'User-Agent': self.ua.random}
-
+    def _get_random_headers(self) -> dict: return {'User-Agent': self.ua.random}
     def _clean_html_content(self, html_text: str) -> str:
         soup = BeautifulSoup(html_text, 'lxml')
         article_body = soup.find('article')
@@ -51,16 +41,13 @@ class ForagerStrategy:
             return content
 
     async def fetch_content(self, url: str) -> ScraperOutput:
-        # [V11.0.2 核心改造] 使用 URL 的 MD5 雜湊值作為快取鍵
         cache_key = hashlib.md5(url.encode('utf-8')).hexdigest() + ".json"
         cache_file = CACHE_DIR / cache_key
-        
         if cache_file.exists():
             cached_data = json.loads(cache_file.read_text(encoding="utf-8"))
             if time.time() - cached_data["timestamp"] < CACHE_EXPIRATION:
                 logger.info(f"從快取命中: {url}")
                 return ScraperOutput.model_validate(cached_data["content"])
-
         try:
             html_content = ""
             logger.info(f"正在使用 Requests 抓取: {url}")
@@ -71,20 +58,13 @@ class ForagerStrategy:
             except requests.exceptions.RequestException as req_err:
                 logger.warning(f"Requests 抓取失敗: {req_err}。將嘗試使用 Playwright。")
                 html_content = await self._fetch_with_browser(url)
-
-            if not html_content:
-                 raise ValueError("兩種抓取方法均未能獲取到頁面內容。")
-
+            if not html_content: raise ValueError("兩種抓取方法均未能獲取到頁面內容。")
             cleaned_article = self._clean_html_content(html_content)
-            
             result_obj = ScraperResult(source_url=url, article_text=cleaned_article.strip())
             output_obj = ScraperOutput(success=True, result=result_obj)
-            
             cache_content = {"timestamp": time.time(), "content": output_obj.model_dump()}
             cache_file.write_text(json.dumps(cache_content, ensure_ascii=False), encoding="utf-8")
-
             return output_obj
-
         except Exception as e:
             error_message = f"ForagerStrategy 在所有嘗試後均失敗 for URL {url}: {e}"
             logger.error(error_message)
@@ -93,12 +73,10 @@ class ForagerStrategy:
 def main():
     if len(sys.argv) > 1:
         url = sys.argv[1]
-        
         async def async_main():
             forager = ForagerStrategy()
             result_model = await forager.fetch_content(url=url)
             sys.stdout.buffer.write(result_model.model_dump_json().encode('utf-8'))
-            
         asyncio.run(async_main())
     else:
         error_result = ScraperOutput(success=False, error="No URL provided to scraper.py")
