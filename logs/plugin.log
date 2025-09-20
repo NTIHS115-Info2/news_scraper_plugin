@@ -1,0 +1,106 @@
+2025-09-13 16:32:47.813 | INFO     | __main__:__init__:27 - ForagerStrategy (V5.0) 已初始化。
+2025-09-13 16:32:47.814 | INFO     | __main__:fetch_news_from_feed:53 - 正在從網路抓取: https://rss.nytimes.com/services/xml/rss/nyt/World.xml
+2025-09-13 16:32:47.815 | INFO     | __main__:fetch_news_from_feed:53 - 正在從網路抓取: http://feeds.bbci.co.uk/news/world/rss.xml
+2025-09-13 16:32:47.816 | INFO     | __main__:fetch_news_from_feed:53 - 正在從網路抓取: https://feeds.reuters.com/Reuters/worldNews
+2025-09-13 16:32:47.849 | ERROR    | __main__:fetch_news_from_feed:76 - 來源 https://feeds.reuters.com/Reuters/worldNews 抓取失敗: HTTPSConnectionPool(host='feeds.reuters.com', port=443): Max retries exceeded with url: /Reuters/worldNews (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000002646F41AA80>: Failed to resolve 'feeds.reuters.com' ([Errno 11001] getaddrinfo failed)"))
+2025-09-13 16:32:49.925 | ERROR    | __main__:fetch_news_from_feed:76 - 來源 https://rss.nytimes.com/services/xml/rss/nyt/World.xml 抓取失敗: 403 Client Error: Forbidden for url: https://www.nytimes.com/2025/09/13/world/middleeast/gaza-city-fleeing.html
+2025-09-13 16:53:48.071 | INFO     | __main__:__init__:31 - ForagerStrategy (V6.0) 已初始化。
+2025-09-13 16:53:48.071 | INFO     | __main__:fetch_news_from_feed:59 - 正在抓取 (嘗試 1/3): https://rss.nytimes.com/services/xml/rss/nyt/World.xml
+2025-09-13 16:53:48.073 | INFO     | __main__:fetch_news_from_feed:56 - 從快取命中: http://feeds.bbci.co.uk/news/world/rss.xml
+2025-09-13 16:53:48.073 | INFO     | __main__:fetch_news_from_feed:59 - 正在抓取 (嘗試 1/3): https://feeds.reuters.com/Reuters/worldNews
+2025-09-13 16:53:48.096 | WARNING  | __main__:fetch_news_from_feed:83 - 來源 https://feeds.reuters.com/Reuters/worldNews 抓取失敗 (嘗試 1): HTTPSConnectionPool(host='feeds.reuters.com', port=443): Max retries exceeded with url: /Reuters/worldNews (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000250ECDE7D10>: Failed to resolve 'feeds.reuters.com' ([Errno 11001] getaddrinfo failed)"))
+2025-09-13 16:53:48.930 | WARNING  | __main__:fetch_news_from_feed:83 - 來源 https://rss.nytimes.com/services/xml/rss/nyt/World.xml 抓取失敗 (嘗試 1): 403 Client Error: Forbidden for url: https://www.nytimes.com/2025/09/13/world/middleeast/gaza-city-fleeing.html
+2025-09-13 16:53:50.087 | INFO     | __main__:fetch_news_from_feed:59 - 正在抓取 (嘗試 2/3): https://feeds.reuters.com/Reuters/worldNews
+2025-09-13 16:53:50.088 | WARNING  | __main__:fetch_news_from_feed:83 - 來源 https://feeds.reuters.com/Reuters/worldNews 抓取失敗 (嘗試 2): HTTPSConnectionPool(host='feeds.reuters.com', port=443): Max retries exceeded with url: /Reuters/worldNews (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000250ECFE65D0>: Failed to resolve 'feeds.reuters.com' ([Errno 11001] getaddrinfo failed)"))
+2025-09-13 16:53:50.933 | INFO     | __main__:fetch_news_from_feed:59 - 正在抓取 (嘗試 2/3): https://rss.nytimes.com/services/xml/rss/nyt/World.xml
+2025-09-13 16:53:51.773 | WARNING  | __main__:fetch_news_from_feed:83 - 來源 https://rss.nytimes.com/services/xml/rss/nyt/World.xml 抓取失敗 (嘗試 2): 403 Client Error: Forbidden for url: https://www.nytimes.com/2025/09/13/world/middleeast/gaza-city-fleeing.html
+2025-09-13 16:53:52.087 | INFO     | __main__:fetch_news_from_feed:59 - 正在抓取 (嘗試 3/3): https://feeds.reuters.com/Reuters/worldNews
+2025-09-13 16:53:52.088 | WARNING  | __main__:fetch_news_from_feed:83 - 來源 https://feeds.reuters.com/Reuters/worldNews 抓取失敗 (嘗試 3): HTTPSConnectionPool(host='feeds.reuters.com', port=443): Max retries exceeded with url: /Reuters/worldNews (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000250ECE36C60>: Failed to resolve 'feeds.reuters.com' ([Errno 11001] getaddrinfo failed)"))
+2025-09-13 16:53:52.088 | ERROR    | __main__:fetch_news_from_feed:87 - 來源 https://feeds.reuters.com/Reuters/worldNews 連續3次抓取失敗。
+2025-09-13 16:53:53.775 | INFO     | __main__:fetch_news_from_feed:59 - 正在抓取 (嘗試 3/3): https://rss.nytimes.com/services/xml/rss/nyt/World.xml
+2025-09-13 16:53:54.488 | WARNING  | __main__:fetch_news_from_feed:83 - 來源 https://rss.nytimes.com/services/xml/rss/nyt/World.xml 抓取失敗 (嘗試 3): 403 Client Error: Forbidden for url: https://www.nytimes.com/2025/09/13/world/middleeast/gaza-city-fleeing.html
+2025-09-13 16:53:54.488 | ERROR    | __main__:fetch_news_from_feed:87 - 來源 https://rss.nytimes.com/services/xml/rss/nyt/World.xml 連續3次抓取失敗。
+2025-09-13 18:03:03.917 | INFO     | __main__:__init__:31 - ForagerStrategy (V7.0) 已初始化。
+2025-09-13 18:03:03.918 | INFO     | __main__:fetch_news_from_feed:70 - 正在使用 Requests 抓取 (嘗試 1/2): https://nvidianews.nvidia.com/news/nvidia-blackwell-architecture-comes-to-geforce-now
+2025-09-13 18:03:03.919 | INFO     | __main__:fetch_news_from_feed:70 - 正在使用 Requests 抓取 (嘗試 1/2): https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/
+2025-09-13 18:03:03.919 | INFO     | __main__:fetch_news_from_feed:70 - 正在使用 Requests 抓取 (嘗試 1/2): https://developer.nvidia.com/blog/nvidia-blackwell-ultra-sets-new-inference-records-in-mlperf-debut/
+2025-09-13 18:03:04.396 | WARNING  | __main__:fetch_news_from_feed:105 - 來源 https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/ 抓取失敗 (嘗試 1): not well-formed (invalid token): line 8, column 67
+2025-09-13 18:03:04.604 | WARNING  | __main__:fetch_news_from_feed:105 - 來源 https://nvidianews.nvidia.com/news/nvidia-blackwell-architecture-comes-to-geforce-now 抓取失敗 (嘗試 1): syntax error: line 4, column 0
+2025-09-13 18:03:04.704 | WARNING  | __main__:fetch_news_from_feed:105 - 來源 https://developer.nvidia.com/blog/nvidia-blackwell-ultra-sets-new-inference-records-in-mlperf-debut/ 抓取失敗 (嘗試 1): syntax error: line 1, column 0
+2025-09-13 18:03:06.407 | INFO     | __main__:fetch_news_from_feed:70 - 正在使用 Requests 抓取 (嘗試 2/2): https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/
+2025-09-13 18:03:06.611 | INFO     | __main__:fetch_news_from_feed:70 - 正在使用 Requests 抓取 (嘗試 2/2): https://nvidianews.nvidia.com/news/nvidia-blackwell-architecture-comes-to-geforce-now
+2025-09-13 18:03:06.706 | INFO     | __main__:fetch_news_from_feed:70 - 正在使用 Requests 抓取 (嘗試 2/2): https://developer.nvidia.com/blog/nvidia-blackwell-ultra-sets-new-inference-records-in-mlperf-debut/
+2025-09-13 18:03:06.716 | WARNING  | __main__:fetch_news_from_feed:105 - 來源 https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/ 抓取失敗 (嘗試 2): not well-formed (invalid token): line 8, column 67
+2025-09-13 18:03:06.716 | ERROR    | __main__:fetch_news_from_feed:109 - 來源 https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/ 連續2次抓取失敗。
+2025-09-13 18:03:07.095 | WARNING  | __main__:fetch_news_from_feed:105 - 來源 https://nvidianews.nvidia.com/news/nvidia-blackwell-architecture-comes-to-geforce-now 抓取失敗 (嘗試 2): syntax error: line 4, column 0
+2025-09-13 18:03:07.095 | ERROR    | __main__:fetch_news_from_feed:109 - 來源 https://nvidianews.nvidia.com/news/nvidia-blackwell-architecture-comes-to-geforce-now 連續2次抓取失敗。
+2025-09-13 18:03:07.155 | WARNING  | __main__:fetch_news_from_feed:105 - 來源 https://developer.nvidia.com/blog/nvidia-blackwell-ultra-sets-new-inference-records-in-mlperf-debut/ 抓取失敗 (嘗試 2): syntax error: line 1, column 0
+2025-09-13 18:03:07.155 | ERROR    | __main__:fetch_news_from_feed:109 - 來源 https://developer.nvidia.com/blog/nvidia-blackwell-ultra-sets-new-inference-records-in-mlperf-debut/ 連續2次抓取失敗。
+2025-09-13 19:09:13.907 | INFO     | __main__:__init__:32 - ForagerStrategy (V9.0) 已初始化。
+2025-09-13 19:09:13.907 | INFO     | __main__:fetch_content:56 - 正在從通用網頁抓取: https://www.theverge.com/2024/2/5/24062752/google-gemini-bard-brand-rename
+2025-09-13 19:09:15.572 | ERROR    | __main__:fetch_content:73 - ForagerStrategy failed for URL https://www.theverge.com/2024/2/5/24062752/google-gemini-bard-brand-rename: 404 Client Error: Not Found for url: https://www.theverge.com/2024/2/5/24062752/google-gemini-bard-brand-rename
+2025-09-13 21:40:42.263 | INFO     | __main__:__init__:28 - ForagerStrategy (V9.0.1) 已初始化。
+2025-09-13 21:40:42.265 | INFO     | __main__:fetch_content:59 - 正在使用 Requests 抓取: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-13 21:40:42.600 | WARNING  | __main__:fetch_content:65 - Requests 抓取失敗: 403 Client Error: Forbidden for url: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/。將嘗試使用 Playwright。
+2025-09-13 21:40:42.601 | INFO     | __main__:_fetch_with_browser:44 - 檢測到反爬蟲機制，切換至 Playwright 攻城槌模式: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-13 21:40:51.252 | WARNING  | __main__:_clean_html_content:37 - 在頁面中未找到 <article> 標籤，將採用通用的 <p> 標籤提取策略。
+2025-09-13 23:12:25.290 | INFO     | __main__:__init__:28 - ForagerStrategy (V9.0.1) 已初始化。
+2025-09-13 23:12:25.290 | INFO     | __main__:fetch_content:59 - 正在使用 Requests 抓取: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-13 23:12:25.611 | WARNING  | __main__:fetch_content:65 - Requests 抓取失敗: 403 Client Error: Forbidden for url: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/。將嘗試使用 Playwright。
+2025-09-13 23:12:25.611 | INFO     | __main__:_fetch_with_browser:44 - 檢測到反爬蟲機制，切換至 Playwright 攻城槌模式: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-13 23:12:28.106 | WARNING  | __main__:_clean_html_content:37 - 在頁面中未找到 <article> 標籤，將採用通用的 <p> 標籤提取策略。
+2025-09-13 23:52:17.644 | INFO     | __main__:__init__:26 - ForagerStrategy (V10.0) 已初始化。
+2025-09-13 23:52:17.677 | INFO     | __main__:fetch_content:74 - 正在使用 Requests 抓取: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-13 23:52:17.965 | WARNING  | __main__:fetch_content:80 - Requests 抓取失敗: 403 Client Error: Forbidden for url: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/。將嘗試使用 Playwright。
+2025-09-13 23:52:17.966 | INFO     | __main__:_fetch_with_browser:45 - 檢測到反爬蟲機制，切換至 Playwright 攻城槌模式: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-13 23:52:20.840 | WARNING  | __main__:_clean_html_content:37 - 在頁面中未找到 <article> 標籤，將採用通用的 <p> 標籤提取策略。
+2025-09-13 23:52:20.844 | ERROR    | __main__:fetch_content:97 - ForagerStrategy 在所有嘗試後均失敗 for URL https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/: 1 validation error for ScraperResult
+source_urls
+  Field required [type=missing, input_value={'source_url': 'https://w...\n學習中心導覽'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2025-09-13 23:52:21.224 | INFO     | __main__:__init__:26 - ForagerStrategy (V10.0) 已初始化。
+2025-09-13 23:52:21.249 | INFO     | __main__:fetch_content:74 - 正在使用 Requests 抓取: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-13 23:52:21.514 | WARNING  | __main__:fetch_content:80 - Requests 抓取失敗: 403 Client Error: Forbidden for url: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/。將嘗試使用 Playwright。
+2025-09-13 23:52:21.514 | INFO     | __main__:_fetch_with_browser:45 - 檢測到反爬蟲機制，切換至 Playwright 攻城槌模式: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-13 23:52:23.019 | WARNING  | __main__:_clean_html_content:37 - 在頁面中未找到 <article> 標籤，將採用通用的 <p> 標籤提取策略。
+2025-09-13 23:52:23.019 | ERROR    | __main__:fetch_content:97 - ForagerStrategy 在所有嘗試後均失敗 for URL https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/: 1 validation error for ScraperResult
+source_urls
+  Field required [type=missing, input_value={'source_url': 'https://w...\n學習中心導覽'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2025-09-14 02:44:35.924 | INFO     | __main__:__init__:32 - ForagerStrategy (V10.0) 已初始化。
+2025-09-14 02:44:35.950 | INFO     | __main__:fetch_content:69 - 正在使用 Requests 抓取: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-14 02:44:36.247 | WARNING  | __main__:fetch_content:75 - Requests 抓取失敗: 403 Client Error: Forbidden for url: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/。將嘗試使用 Playwright。
+2025-09-14 02:44:36.247 | INFO     | __main__:_fetch_with_browser:49 - 檢測到反爬蟲機制，切換至 Playwright 攻城槌模式: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-14 02:44:39.680 | WARNING  | __main__:_clean_html_content:42 - 在頁面中未找到 <article> 標籤，將採用通用的 <p> 標籤提取策略。
+2025-09-14 02:44:49.738 | INFO     | __main__:__init__:32 - ForagerStrategy (V10.0) 已初始化。
+2025-09-14 02:44:49.781 | INFO     | __main__:fetch_content:64 - 從快取命中: https://www.cloudflare.com/learning/bots/what-is-a-web-crawler/
+2025-09-20 13:18:05.443 | INFO     | __main__:__init__:32 - ForagerStrategy (V10.0) 已初始化。
+2025-09-20 13:18:05.443 | INFO     | __main__:__init__:32 - ForagerStrategy (V10.0) 已初始化。
+2025-09-20 13:18:05.443 | INFO     | __main__:__init__:32 - ForagerStrategy (V10.0) 已初始化。
+2025-09-20 13:18:05.458 | INFO     | __main__:fetch_content:69 - 正在使用 Requests 抓取: //duckduckgo.com/l/?uddg=https%3A%2F%2Fnvidianews.nvidia.com%2Fnews%2Fnvidia%2Dblackwell%2Dplatform%2Darrives%2Dto%2Dpower%2Da%2Dnew%2Dera%2Dof%2Dcomputing&rut=e06c55ecd7d3daab814bebf8633e59916042c4a0ddec8bed497d6d4017e8a205
+2025-09-20 13:18:05.458 | INFO     | __main__:fetch_content:69 - 正在使用 Requests 抓取: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.artificialintelligence%2Dnews.com%2Fnews%2Fnvidia%2Dunveils%2Dblackwell%2Darchitecture%2Dpower%2Dnext%2Dgenai%2Dwave%2F&rut=bf66af6f027754f0db60fd4ab68178438084d19bddb2b2ea21a8b324bdebf77f
+2025-09-20 13:18:05.460 | WARNING  | __main__:fetch_content:75 - Requests 抓取失敗: Invalid URL '//duckduckgo.com/l/?uddg=https%3A%2F%2Fnvidianews.nvidia.com%2Fnews%2Fnvidia%2Dblackwell%2Dplatform%2Darrives%2Dto%2Dpower%2Da%2Dnew%2Dera%2Dof%2Dcomputing&rut=e06c55ecd7d3daab814bebf8633e59916042c4a0ddec8bed497d6d4017e8a205': No scheme supplied. Perhaps you meant https:////duckduckgo.com/l/?uddg=https%3A%2F%2Fnvidianews.nvidia.com%2Fnews%2Fnvidia%2Dblackwell%2Dplatform%2Darrives%2Dto%2Dpower%2Da%2Dnew%2Dera%2Dof%2Dcomputing&rut=e06c55ecd7d3daab814bebf8633e59916042c4a0ddec8bed497d6d4017e8a205?。將嘗試使用 Playwright。
+2025-09-20 13:18:05.460 | INFO     | __main__:_fetch_with_browser:49 - 檢測到反爬蟲機制，切換至 Playwright 攻城槌模式: //duckduckgo.com/l/?uddg=https%3A%2F%2Fnvidianews.nvidia.com%2Fnews%2Fnvidia%2Dblackwell%2Dplatform%2Darrives%2Dto%2Dpower%2Da%2Dnew%2Dera%2Dof%2Dcomputing&rut=e06c55ecd7d3daab814bebf8633e59916042c4a0ddec8bed497d6d4017e8a205
+2025-09-20 13:18:05.461 | WARNING  | __main__:fetch_content:75 - Requests 抓取失敗: Invalid URL '//duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.artificialintelligence%2Dnews.com%2Fnews%2Fnvidia%2Dunveils%2Dblackwell%2Darchitecture%2Dpower%2Dnext%2Dgenai%2Dwave%2F&rut=bf66af6f027754f0db60fd4ab68178438084d19bddb2b2ea21a8b324bdebf77f': No scheme supplied. Perhaps you meant https:////duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.artificialintelligence%2Dnews.com%2Fnews%2Fnvidia%2Dunveils%2Dblackwell%2Darchitecture%2Dpower%2Dnext%2Dgenai%2Dwave%2F&rut=bf66af6f027754f0db60fd4ab68178438084d19bddb2b2ea21a8b324bdebf77f?。將嘗試使用 Playwright。
+2025-09-20 13:18:05.461 | INFO     | __main__:_fetch_with_browser:49 - 檢測到反爬蟲機制，切換至 Playwright 攻城槌模式: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.artificialintelligence%2Dnews.com%2Fnews%2Fnvidia%2Dunveils%2Dblackwell%2Darchitecture%2Dpower%2Dnext%2Dgenai%2Dwave%2F&rut=bf66af6f027754f0db60fd4ab68178438084d19bddb2b2ea21a8b324bdebf77f
+2025-09-20 13:18:06.393 | ERROR    | __main__:fetch_content:93 - ForagerStrategy 在所有嘗試後均失敗 for URL //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.artificialintelligence%2Dnews.com%2Fnews%2Fnvidia%2Dunveils%2Dblackwell%2Darchitecture%2Dpower%2Dnext%2Dgenai%2Dwave%2F&rut=bf66af6f027754f0db60fd4ab68178438084d19bddb2b2ea21a8b324bdebf77f: Page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+Call log:
+  - navigating to "//duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.artificialintelligence%2Dnews.com%2Fnews%2Fnvidia%2Dunveils%2Dblackwell%2Darchitecture%2Dpower%2Dnext%2Dgenai%2Dwave%2F&rut=bf66af6f027754f0db60fd4ab68178438084d19bddb2b2ea21a8b324bdebf77f", waiting until "domcontentloaded"
+
+2025-09-20 13:18:06.393 | ERROR    | __main__:fetch_content:93 - ForagerStrategy 在所有嘗試後均失敗 for URL //duckduckgo.com/l/?uddg=https%3A%2F%2Fnvidianews.nvidia.com%2Fnews%2Fnvidia%2Dblackwell%2Dplatform%2Darrives%2Dto%2Dpower%2Da%2Dnew%2Dera%2Dof%2Dcomputing&rut=e06c55ecd7d3daab814bebf8633e59916042c4a0ddec8bed497d6d4017e8a205: Page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+Call log:
+  - navigating to "//duckduckgo.com/l/?uddg=https%3A%2F%2Fnvidianews.nvidia.com%2Fnews%2Fnvidia%2Dblackwell%2Dplatform%2Darrives%2Dto%2Dpower%2Da%2Dnew%2Dera%2Dof%2Dcomputing&rut=e06c55ecd7d3daab814bebf8633e59916042c4a0ddec8bed497d6d4017e8a205", waiting until "domcontentloaded"
+
+2025-09-20 13:22:44.531 | INFO     | __main__:__init__:27 - ForagerStrategy (V11.0.2) 已初始化。
+2025-09-20 13:22:44.531 | INFO     | __main__:__init__:27 - ForagerStrategy (V11.0.2) 已初始化。
+2025-09-20 13:22:44.532 | INFO     | __main__:__init__:27 - ForagerStrategy (V11.0.2) 已初始化。
+2025-09-20 13:22:44.545 | INFO     | __main__:fetch_content:67 - 正在使用 Requests 抓取: https://www.tomshardware.com/pc-components/gpus/nvidia-blackwell-architecture-deep-dive-a-closer-look-at-the-upgrades-coming-with-rtx-50-series-gpus
+2025-09-20 13:22:44.545 | INFO     | __main__:fetch_content:67 - 正在使用 Requests 抓取: https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing
+2025-09-20 13:22:44.545 | INFO     | __main__:fetch_content:67 - 正在使用 Requests 抓取: https://www.artificialintelligence-news.com/news/nvidia-unveils-blackwell-architecture-power-next-genai-wave/
+2025-09-20 13:22:46.407 | WARNING  | __main__:_clean_html_content:37 - 在頁面中未找到 <article> 標籤，將採用通用的 <p> 標籤提取策略。
+2025-09-20 13:31:19.610 | INFO     | __main__:__init__:27 - ForagerStrategy (V11.0.2) 已初始化。
+2025-09-20 13:31:19.610 | INFO     | __main__:__init__:27 - ForagerStrategy (V11.0.2) 已初始化。
+2025-09-20 13:31:19.610 | INFO     | __main__:__init__:27 - ForagerStrategy (V11.0.2) 已初始化。
+2025-09-20 13:31:19.624 | INFO     | __main__:fetch_content:61 - 從快取命中: https://www.artificialintelligence-news.com/news/nvidia-unveils-blackwell-architecture-power-next-genai-wave/
+2025-09-20 13:31:19.624 | INFO     | __main__:fetch_content:61 - 從快取命中: https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing
+2025-09-20 13:31:19.624 | INFO     | __main__:fetch_content:61 - 從快取命中: https://www.tomshardware.com/pc-components/gpus/nvidia-blackwell-architecture-deep-dive-a-closer-look-at-the-upgrades-coming-with-rtx-50-series-gpus

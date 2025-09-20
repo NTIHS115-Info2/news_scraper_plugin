@@ -10,13 +10,13 @@ from typing import List
 
 class ResearcherStrategy:
     """
-    研究員策略 - V10.0 "游擊偵察兵"
+    研究員策略 - V11.0 (繼承自 V10.0 "游擊偵察兵")
     核心職責：直接爬取 DuckDuckGo 搜尋結果頁面，發現情報來源。
     """
     def __init__(self):
         self.ua = UserAgent()
-        self.base_url = "https://html.duckduckgo.com/html/" # 使用純 HTML 版本以簡化解析
-        logger.info("ResearcherStrategy (V10.0) 已初始化。")
+        self.base_url = "https://html.duckduckgo.com/html/"
+        logger.info("ResearcherStrategy (V11.0) 已初始化。")
 
     async def discover_sources(self, topic: str, num_results: int = 5) -> dict:
         try:
@@ -30,13 +30,11 @@ class ResearcherStrategy:
                 lambda: requests.get(self.base_url, headers=headers, params=params, timeout=15)
             )
             response.raise_for_status()
-            
+
             soup = BeautifulSoup(response.text, 'lxml')
-            
-            # DuckDuckGo HTML 版本的結果連結在 class="result__a" 的 a 標籤中
             link_tags = soup.select('a.result__a')
             links = [tag['href'] for tag in link_tags[:num_results]]
-            
+
             logger.info(f"成功發現 {len(links)} 個潛在來源。")
             return {
                 "success": True,

@@ -1,23 +1,16 @@
 # plugins/news_scraper/strategies/remote/scraper.py
 import sys
 import json
-# [V10.0.2 防禦性設計] 將導入語句放在 try...except 塊中
-try:
-    import requests
-    from bs4 import BeautifulSoup
-    import asyncio
-    from pathlib import Path
-    from loguru import logger
-    from playwright.async_api import async_playwright
-    from fake_useragent import UserAgent
-    import time
-    from data_models import ScraperOutput, ScraperResult
-except ImportError as e:
-    # 如果任何導入失敗，立即打印一個標準化的 JSON 錯誤並退出
-    error_output = {"success": False, "error": f"Import Error in scraper.py: {e}"}
-    print(json.dumps(error_output, ensure_ascii=False))
-    sys.exit(1)
-
+import requests
+from bs4 import BeautifulSoup
+import asyncio
+from pathlib import Path
+from loguru import logger
+from playwright.async_api import async_playwright
+from fake_useragent import UserAgent
+import time
+import hashlib # [V11.0.2 新增] 引入雜湊函式庫
+from data_models import ScraperOutput, ScraperResult
 
 # --- 配置 ---
 log_path = Path(__file__).parent.parent.parent.parent.parent / "logs" / "plugin.log"
@@ -27,9 +20,11 @@ CACHE_EXPIRATION = 3600
 CACHE_DIR.mkdir(exist_ok=True)
 
 class ForagerStrategy:
-    # ... (內部程式碼與 V10.0 相同) ...
+    """
+    情報採集策略 - V11.0.2 "健壯情報核心"
+    """
     def __init__(self):
-        logger.info("ForagerStrategy (V10.0) 已初始化。")
+        logger.info("ForagerStrategy (V11.0.2) 已初始化。")
         self.ua = UserAgent()
 
     def _get_random_headers(self) -> dict:
@@ -56,8 +51,10 @@ class ForagerStrategy:
             return content
 
     async def fetch_content(self, url: str) -> ScraperOutput:
-        cache_key = url.replace("https://", "").replace("http://", "").replace("/", "_") + ".json"
+        # [V11.0.2 核心改造] 使用 URL 的 MD5 雜湊值作為快取鍵
+        cache_key = hashlib.md5(url.encode('utf-8')).hexdigest() + ".json"
         cache_file = CACHE_DIR / cache_key
+        
         if cache_file.exists():
             cached_data = json.loads(cache_file.read_text(encoding="utf-8"))
             if time.time() - cached_data["timestamp"] < CACHE_EXPIRATION:
