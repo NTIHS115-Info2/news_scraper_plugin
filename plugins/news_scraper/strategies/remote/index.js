@@ -1,12 +1,13 @@
 // plugins/news_scraper/strategies/remote/index.js
+
 import { spawn } from 'child_process';
 import path from 'path';
 
 class RemoteStrategy {
     constructor(options) {
-        this.pythonPath = options.pythonPath || 'python3'; // [macOS 修正] 預設使用 python3
+        this.pythonPath = options.pythonPath || 'python3';
         this.strategyPath = path.join(process.cwd(), 'plugins', 'news_scraper', 'strategies', 'remote');
-        console.log("遠程新聞抓取策略 (RemoteStrategy) V11.0 已初始化。");
+        console.log("遠程新聞抓取策略 (RemoteStrategy) V13.0 已初始化。");
     }
 
     _runPythonScript(scriptName, args) {
@@ -28,7 +29,7 @@ class RemoteStrategy {
                     reject(new Error(errorMessage));
                 } else {
                     if (stdout.trim() === '') {
-                        resolve('{}'); 
+                        resolve('{}');
                         return;
                     }
                     resolve(stdout);
@@ -37,8 +38,8 @@ class RemoteStrategy {
         });
     }
 
-    async send(option) {
-        const { topic, query, depth = 3 } = option;
+    async send(payload) { // [V13.0] 參數為 payload
+        const { topic, query, depth = 3 } = payload; // [V13.0] 從 payload 解構
         if (!topic || !query) {
             return { success: false, error: "缺少 'topic' 或 'query' 參數。" };
         }
@@ -59,32 +60,35 @@ class RemoteStrategy {
             const scrapeResults = await Promise.all(scrapePromises);
 
             let allArticlesText = '';
+            let scrapeErrors = [];
             scrapeResults.forEach((content, index) => {
                 try {
                     const data = JSON.parse(content);
                     if (data.success && data.result) {
                         allArticlesText += data.result.article_text + '\n\n';
                     } else {
-                        console.warn(`[RemoteStrategy] 抓取 URL ${discoveredUrls[index]} 失敗: ${data.error || '未知錯誤'}`);
+                        const errorMsg = `抓取 URL ${discoveredUrls[index]} 失敗: ${data.error || '未知錯誤'}`;
+                        console.warn(`[RemoteStrategy] ${errorMsg}`);
+                        scrapeErrors.push(errorMsg);
                     }
                 } catch (e) {
-                    console.error(`[RemoteStrategy] 解析 URL ${discoveredUrls[index]} 的 scraper 結果時出錯:`, e);
+                    const errorMsg = `解析 URL ${discoveredUrls[index]} 的 scraper 結果時出錯: ${e.message}`;
+                    console.error(`[RemoteStrategy] ${errorMsg}`);
+                    scrapeErrors.push(errorMsg)
                 }
             });
-
             if (!allArticlesText.trim()) {
-                 return { success: true, result: [], resultType: "list" };
+                 console.error("[RemoteStrategy] 所有來源均抓取失敗。");
+                 return { success: false, error: "所有已發現的來源均無法抓取內容。", value: scrapeErrors };
             }
 
-            console.log(`[RemoteStrategy] 步驟 3: 調用 librarian 過濾內容，查詢: "${query}"`);
+            console.log(`[RemoteStrategy] 步驟 3: 調用 librarian 過濾內容...`);
             const filteredResult = await this._runPythonScript('librarian.py', [allArticlesText, query]);
             const filteredData = JSON.parse(filteredResult);
-
             if (filteredData.success && filteredData.result) {
-                 return { success: true, result: filteredData.result.relevant_sections, resultType: 'list' };
+                 return { success: true, result: filteredData.result, resultType: 'json' }; // [V13.0] resultType 改為 json
             }
             return filteredData;
-
         } catch (error) {
             return { success: false, error: `RemoteStrategy 執行失敗: ${error.message}` };
         }

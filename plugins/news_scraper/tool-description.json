@@ -1,33 +1,19 @@
 [
   {
-    "toolName": "news_scraper.fetch_news",
-    "description": "獲取當日最新的時事新聞摘要。當使用者詢問關於『今天的新聞』、『今日頭條』或任何與當前時事相關的通用性問題時使用。",
-    "input": {},
-    "output": {
-      "success": true,
-      "result": {
-        "source_url": "https://example.com/news",
-        "fetch_time": "2025-09-12T14:30:00Z",
-        "content": "這是今天所有新聞經過初步處理和合併後的長篇純文本..."
-      },
-      "resultType": "string"
-    }
-  },
-  {
-    "toolName": "news_scraper.filter_content",
-    "description": "從一段已經獲取的長篇文本中，根據使用者的具體查詢，索引並提取最相關的資訊。當使用者在已有新聞上下文的基礎上，提出更具體的問題時（例如『關於蘋果發佈會的內容』）使用。",
+    "toolName": "news_scraper.autonomous_researcher",
+    "description": "接收一個研究主題和一個具體問題，自主上網搜尋、抓取、並過濾多個來源的資訊，最終回傳與具體問題最相關的文本片段。適用於需要對特定時事或主題進行快速、深度情報蒐集的場景。",
     "input": {
-      "content": "從 `fetch_news` 工具獲取到的長篇文本內容",
-      "query": "使用者的具體查詢關鍵詞，例如 'iPhone 17 規格'"
+      "topic": "需要進行廣泛搜尋的研究主題，例如 'NVIDIA Blackwell architecture'",
+      "query": "需要從搜尋結果中回答的具體問題，例如 'What are the performance improvements of Blackwell over Hopper?'",
+      "depth": "搜尋結果的深度（要分析幾個來源），可選，預設為 3"
     },
     "output": {
       "success": true,
       "result": {
         "relevant_sections": [
           {
-            "topic": "iPhone 17 Pro",
-            "text": "iPhone 17 Pro 將搭載 A20 晶片，並首次引入潛望式長焦鏡頭...",
-            "confidence": 0.92
+            "chunk": "The fourth slide gives the goals for Blackwell: Optimize for new neural workloads, reduce memory footprint...",
+            "score": 0.8114
           }
         ]
       },
